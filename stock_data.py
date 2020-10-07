@@ -2,6 +2,7 @@ import yfinance as yf
 from tkinter import *
 from tkcalendar import *
 from datetime import datetime
+from pandastable import Table
 
 class Stock_data:
 
@@ -47,14 +48,26 @@ class Stock_data:
 
 
 	def download_data(self):
+		# getting stock data
 		stock = yf.Ticker(self.smbl_box.get())
-		history = stock.history(start=self.fd, end=self.td)
+		hist = stock.history(start=self.fd, end=self.td)
 
+		# create new window
 		hist_window = Tk()
-		hist_window.title(stock.info["longName"])
+		hist_window.title(self.smbl_box.get())
 
-		hist_table = Label(hist_window, text=history)
-		hist_table.grid(row=0, column=0)
+		frame = Frame(hist_window)
+		frame.pack()
+
+		# create table (pandastable.Table(tk.frame))
+		table = Table(frame)
+		# write stock data to the table
+		table.model.df = hist
+		# update changes in table
+		table.redraw()
+		table.show()
+
+		chart_button = Button(hist_window, text="Show chart").pack()
 
 		hist_window.mainloop()
 	
